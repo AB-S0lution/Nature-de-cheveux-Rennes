@@ -1,5 +1,5 @@
-import { photoImg } from '../core/ui'
-import { photos } from '../data/photos'
+import { photoImg, photoFig } from '../core/ui'
+import { photos, photo } from '../data/photos'
 import { boot } from '../core/boot'
 import { pageHero, ctaBand, sampleBadge } from '../core/ui'
 import { setHTML, $, $$, typo, normalize } from '../core/dom'
@@ -12,12 +12,12 @@ const prodPhotos = photos.filter((p) => ['produits', 'soins', 'plantes'].include
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Les produits', lead: 'Cosmétiques bio, en vrac et solides, vendus au salon uniquement. Aucune vente en ligne ni livraison.', dye: 'sauge' })}
+  ${pageHero({ title: 'Les produits', lead: 'Cosmétiques bio, en vrac et solides, vendus au salon uniquement. Aucune vente en ligne ni livraison.', dye: 'sauge', photo: 'bol-poudre-table' })}
 
   <section class="section tint-mint" data-dye="sauge" id="vrac">
     <div class="wrap">
       <h2 data-split>La station de vrac</h2>
-      <p class="lead">Venez avec votre flacon : quatre pompes Couleurs Gaïa, quatre usages. Les prix de recharge ne sont pas publiés ici.</p>
+      <div class="two-col wide-left" style="align-items:center"><p class="lead">Venez avec votre flacon : quatre pompes Couleurs Gaïa, quatre usages. Les prix de recharge ne sont pas publiés ici.</p>${photoFig(photo('flacon-ambre'), 'ph-landscape')}</div>
       <div class="vrac-station" style="margin-top:2rem">${vrac.map((v) => `<div class="vrac-box" data-reveal><span class="pump" aria-hidden="true"></span><span class="etiquette">${v.name}</span><p><strong>${v.type}</strong></p><p>${v.hairNeed}</p></div>`).join('')}</div>
     </div>
   </section>

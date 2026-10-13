@@ -1,5 +1,5 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand, postCard, sampleBadge } from '../core/ui'
+import { pageHero, ctaBand, postCard, sampleBadge, postCover, photoBand } from '../core/ui'
 import { setHTML, fmtDate, u } from '../core/dom'
 import { icon } from '../core/icons'
 import { posts, postBySlug } from '../data/posts'
@@ -18,7 +18,7 @@ void boot((main) => {
     <h1 data-split>${p.title}</h1>
     <p class="lead" data-reveal>${p.excerpt}</p>
     <p class="mono muted">${fmtDate(p.date)} · ${p.minutes} min de lecture · ${p.author}</p>
-  </div></section>
+  </div><div class="wrap">${photoBand(postCover(p), 'hero-band article-cover', true)}</div></section>
   <section class="section"><div class="wrap-narrow">
     ${sampleBadge('Article d’exemple, rédigé pour la démonstration.')}
     <div class="article-body prose">${p.sections.map((s) => `${s.h ? `<h2>${s.h}</h2>` : ''}<p>${s.p}</p>`).join('')}</div>

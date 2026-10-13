@@ -1,5 +1,6 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand } from '../core/ui'
+import { pageHero, ctaBand, photoFig } from '../core/ui'
+import { photo } from '../data/photos'
 import { setHTML } from '../core/dom'
 import { icon, type IconName } from '../core/icons'
 import { salon } from '../data/salon'
@@ -11,7 +12,7 @@ const kindIcon: Record<string, IconName> = { bus: 'bus', ter: 'train', metro: 't
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Infos pratiques et contact', lead: `${salon.address.street}, ${salon.address.postalCode} ${salon.address.city}. Aux portes de Rennes, dans le Bourg.`, dye: 'teal' })}
+  ${pageHero({ title: 'Infos pratiques et contact', lead: `${salon.address.street}, ${salon.address.postalCode} ${salon.address.city}. Aux portes de Rennes, dans le Bourg.`, dye: 'teal', photo: 'salon-brique' })}
   <section class="section"><div class="wrap info-grid">
     <div class="stack">
       ${hoursTable()}
@@ -33,7 +34,7 @@ void boot((main) => {
   </div></section>
   <section class="section"><div class="wrap two-col">
     <div class="stack"><h2 data-split>Dans le quartier</h2><p>Le salon se trouve dans le Bourg, le vieux centre de Cesson-Sévigné. L’église Saint-Martin est à environ 50 m et la place du Marché à environ 120 m.</p><p>Un marché bio a lieu le mercredi après-midi, place de l’Église. Le salon est alors fermé l’après-midi.</p></div>
-    <div class="note-box"><p><strong>Accessibilité.</strong> Une place de stationnement pour personnes à mobilité réduite est signalée près de la place du Marché. Pour toute question, appelez le salon.</p></div>
+    <div class="stack">${photoFig(photo('salon-comptoir'), 'ph-landscape')}<div class="note-box"><p><strong>Accessibilité.</strong> Une place de stationnement pour personnes à mobilité réduite est signalée près de la place du Marché. Pour toute question, appelez le salon.</p></div></div>
   </div></section>
   ${ctaBand()}`)
   liveOpen()

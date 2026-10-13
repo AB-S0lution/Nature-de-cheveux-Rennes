@@ -1,12 +1,13 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand } from '../core/ui'
+import { pageHero, ctaBand, photoFig } from '../core/ui'
+import { photo } from '../data/photos'
 import { setHTML, $ } from '../core/dom'
 import { lineage } from '../data/team'
 import { mountVisagiste } from '../components/visagiste'
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Visagiste', lead: 'La coupe qui vous ressemble : un diagnostic simple, quelques questions, une coupe sur mesure.', dye: 'violette' })}
+  ${pageHero({ title: 'Visagiste', lead: 'La coupe qui vous ressemble : un diagnostic simple, quelques questions, une coupe sur mesure.', dye: 'violette', photo: 'sechoir' })}
   <section class="section">
     <div class="wrap">
       <h2 data-split>Qui êtes-vous ?</h2>
@@ -22,6 +23,7 @@ void boot((main) => {
         <p>Une coupe réussie tient compte de votre visage, de la nature de vos cheveux, de votre quotidien et de ce que vous aimez. Le conseil en image n’impose rien : il propose.</p>
       </div>
       <div class="stack">
+        ${photoFig(photo('outils-brosses'), 'ph-landscape')}
         <h3>Formation</h3>
         <ul>${lineage.map((l) => `<li style="margin-bottom:.6rem">${l}</li>`).join('')}</ul>
       </div>

@@ -15,7 +15,7 @@ import { mountProcess } from '../components/process'
 import { mountQuotes } from '../components/quotesCarousel'
 import { hoursTable, openPill, liveOpen } from '../components/hoursPanel'
 import { mapSvg, vilaineWave } from '../components/map'
-import { gsap, heroTitle, reduced } from '../core/motion'
+import { gsap, ScrollTrigger, heroTitle, reduced, mm, MQ } from '../core/motion'
 
 const proofs = [
   { big: '4,7/5', sm: '99 avis Google (octobre 2026)' },
@@ -93,6 +93,7 @@ void boot(async (main) => {
     <div class="wrap">
       <h2 data-split>Je viens pour…</h2>
       <div class="needs-row" role="list">${needs.map((n) => `<a class="need" role="listitem" href="${u(n.href)}" data-reveal><span class="sw" aria-hidden="true"><svg viewBox="0 0 200 46" width="100%" height="46"><path d="M0 23 C 40 0, 60 46, 100 23 S 160 0, 200 23" fill="none" stroke="${n.plant}" stroke-width="9" stroke-linecap="round"/></svg></span><h3>${n.label}</h3><p>${n.blurb}</p></a>`).join('')}</div>
+      <p class="swipe-hint needs-hint" aria-hidden="true">Faites glisser</p>
     </div>
   </section>
 
@@ -104,7 +105,7 @@ void boot(async (main) => {
         <p>Rhubarbe, avoine, henné, indigo, guimauve, curcuma. Pas de blond polaire, pas de rose ni de bleu : des nuances naturelles, qui n’abîment pas la fibre.</p>
         <div class="btn-row"><a class="btn" href="${u('coloration-vegetale/')}">Découvrir la coloration</a><a class="link" href="${u('prestations/')}">Voir les tarifs${icon('arrowRight', 18)}</a></div>
       </div>
-      <div class="herb-grid" style="grid-template-columns:repeat(3,1fr)" data-reveal>
+      <div class="herb-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))" data-reveal>
         ${['henne', 'indigo', 'rhubarbe'].map((id, i) => `<figure data-parallax style="margin-top:${i * 22}px;--par:${14 + i * 10}px">${herbariumSvg(id, { id: 'h-' + id })}</figure>`).join('')}
       </div>
     </div>
@@ -134,7 +135,7 @@ void boot(async (main) => {
         <p>On coupe sec pour voir la boucle telle qu’elle tombe : la forme suit votre texture, au lieu de la contrarier.</p>
         <a class="btn light" href="${u('cheveux-boucles/')}">Voir les cheveux bouclés</a>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem" data-reveal>${textures()}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem" data-reveal>${textures()}</div>
     </div>
   </section>
 
@@ -209,6 +210,12 @@ void boot(async (main) => {
   mountQuotes($('#quotes-host')!)
   liveOpen()
 
+  // Bandeau des plantes : l'animation CSS ne tourne que lorsqu'il est visible.
+  const mq = $('.marquee')
+  if (mq && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => mq.classList.toggle('is-off', !e.isIntersecting)).observe(mq)
+  }
+
   // Hero : le titre prend la couleur, la mèche se dessine, le pigment réagit au pointeur.
   heroTitle($('#hero-title')!)
   if (!reduced) {
@@ -216,10 +223,17 @@ void boot(async (main) => {
     const len = strand.getTotalLength()
     gsap.set(strand, { strokeDasharray: len, strokeDashoffset: len })
     gsap.to(strand, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut', delay: 0.3 })
-    gsap.utils.toArray<SVGElement>('.hero-art .blob').forEach((b, i) => {
-      gsap.to(b, { scale: 1.12 + i * 0.03, opacity: 0.9, duration: 5 + i, yoyo: true, repeat: -1, ease: 'sine.inOut' })
-    })
     const art = $('[data-hero-art]')!
+    const blobs = gsap.utils.toArray<SVGElement>('.hero-art .blob')
+    mm.add(MQ.desktop, () => {
+      // Bureau : les encres respirent en boucle, en pause dès que le héros sort de l'écran.
+      const loops = blobs.map((b, i) => gsap.to(b, { scale: 1.12 + i * 0.03, opacity: 0.9, duration: 5 + i, yoyo: true, repeat: -1, ease: 'sine.inOut' }))
+      ScrollTrigger.create({ trigger: art, start: 'top bottom', end: 'bottom top', onToggle: (self) => loops.forEach((l) => (self.isActive ? l.resume() : l.pause())) })
+    })
+    mm.add(MQ.touch, () => {
+      // Tactile : une seule respiration (le filtre de turbulence est trop coûteux à animer en continu).
+      gsap.fromTo(blobs, { scale: 0.86 }, { scale: 1.06, duration: 2.4, ease: 'sine.out', stagger: 0.15 })
+    })
     const qx = gsap.quickTo(art.querySelector('.art-pigment'), 'x', { duration: 1.2, ease: 'power3.out' })
     const qy = gsap.quickTo(art.querySelector('.art-pigment'), 'y', { duration: 1.2, ease: 'power3.out' })
     art.addEventListener('pointermove', (e) => { const r = art.getBoundingClientRect(); qx(((e as PointerEvent).clientX - r.left) / r.width * 28 - 14); qy(((e as PointerEvent).clientY - r.top) / r.height * 28 - 14) })

@@ -7,7 +7,7 @@ import { openPill, liveOpen } from '../components/hoursPanel'
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Réserver', lead: 'Trois façons de prendre rendez-vous. Pour une première coloration ou des mèches, un appel ou un diagnostic est nécessaire.', dye: 'framboise' })}
+  ${pageHero({ title: 'Réserver', lead: 'Trois façons de prendre rendez-vous. Pour une première coloration ou des mèches, un appel ou un diagnostic est nécessaire.', dye: 'framboise', photo: 'salon-bacs' })}
   <section class="section"><div class="wrap">
     ${openPill()}
     <div class="book-grid" style="margin-top:1.5rem">

@@ -1,5 +1,6 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand, sampleBadge } from '../core/ui'
+import { pageHero, ctaBand, sampleBadge, photoFig } from '../core/ui'
+import { photo } from '../data/photos'
 import { setHTML, $, u } from '../core/dom'
 import { icon } from '../core/icons'
 import { plants } from '../data/plants'
@@ -19,7 +20,7 @@ const cant = [
 void boot((main) => {
   const herb = plants.filter((p) => p.inBowl)
   setHTML(main, `
-  ${pageHero({ title: 'Coloration végétale et minérale', lead: 'Des poudres de plantes et de l’eau, préparées devant vous. Sans ammoniaque, sans PPD, sans résorcine : une couleur qui respecte le cuir chevelu.', dye: 'henne' })}
+  ${pageHero({ title: 'Coloration végétale et minérale', lead: 'Des poudres de plantes et de l’eau, préparées devant vous. Sans ammoniaque, sans PPD, sans résorcine : une couleur qui respecte le cuir chevelu.', dye: 'henne', photo: 'poudre-brune-bol' })}
 
   <section class="section">
     <div class="wrap two-col wide-left">
@@ -31,6 +32,7 @@ void boot((main) => {
       </div>
       <div style="border-radius:var(--r-card);overflow:hidden;aspect-ratio:4/5" data-parallax>${pigmentSvg({ colors: ['#A8432A', '#1E2A55', '#C99A3B'], seed: 21, id: 'col-hero', label: 'Poudres de henné, d’indigo et de rhubarbe diffusées dans l’eau', mist: true })}</div>
     </div>
+    <div class="wrap ph-trio" style="margin-top:2.5rem">${['bol-bois-poudre', 'mortier', 'deux-bols-poudres'].map((s) => photoFig(photo(s))).join('')}</div>
   </section>
 
   <div id="process-host"></div>

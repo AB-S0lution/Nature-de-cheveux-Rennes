@@ -6,7 +6,7 @@ import { faqs } from '../data/faq'
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Questions fréquentes', lead: 'Coloration végétale, première visite, réservation, annulation, don de cheveux, accès.', dye: 'violette' })}
+  ${pageHero({ title: 'Questions fréquentes', lead: 'Coloration végétale, première visite, réservation, annulation, don de cheveux, accès.', dye: 'violette', photo: 'bocaux-plantes' })}
   <section class="section"><div class="wrap-narrow">
     ${sampleBadge('Réponses rédigées à partir des informations publiques du salon ; à relire avec lui.')}
     <div class="toolbar" style="margin-top:1.5rem"><div class="search"><span class="ico">${icon('search', 18)}</span><input class="input" id="f-q" type="search" placeholder="Rechercher une question" aria-label="Rechercher une question"></div></div>

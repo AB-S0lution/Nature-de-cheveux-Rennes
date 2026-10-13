@@ -9,7 +9,7 @@ import { salon } from '../data/salon'
 void boot((main) => {
   const total = googleDistribution.reduce((a, b) => a + b.count, 0)
   setHTML(main, `
-  ${pageHero({ title: 'Avis', lead: '4,7/5 sur 99 avis Google (octobre 2026). Les mots des clientes, tels qu’ils ont été écrits, avec la plateforme et la date.', dye: 'framboise' })}
+  ${pageHero({ title: 'Avis', lead: '4,7/5 sur 99 avis Google (octobre 2026). Les mots des clientes, tels qu’ils ont été écrits, avec la plateforme et la date.', dye: 'framboise', photo: 'boucles-mur-rose' })}
   <section class="section">
     <div class="wrap">
       <h2 data-split>Les notes</h2>

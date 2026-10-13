@@ -1,4 +1,5 @@
-// DONNÉES D'EXEMPLE : œuvres originales générées (SVG), sans photo ni reproduction de la fresque du salon.
+// DONNÉES D'EXEMPLE : œuvres originales générées (SVG), sans reproduction de la fresque du salon.
+// Les emplacements « photoSlot » montrent une photo d'illustration Unsplash en attendant la vraie photo.
 export type GalleryType = 'mèche' | 'herbier' | 'pigment' | 'texture'
 
 export interface GalleryItem {
@@ -11,6 +12,8 @@ export interface GalleryItem {
   texture?: 'lisse' | 'ondulé' | 'bouclé' | 'frisé'
   seed: number
   photoSlot?: boolean
+  /** Photo d'illustration (slug de photos.ts) affichée en attendant la photo réelle du salon. */
+  photo?: string
 }
 
 export const gallery: GalleryItem[] = [
@@ -34,9 +37,9 @@ export const gallery: GalleryItem[] = [
   { id: 't2', type: 'texture', title: 'Ondulé', alt: 'Texture de cheveux ondulés : cinq mèches en vagues douces', texture: 'ondulé', seed: 32 },
   { id: 't3', type: 'texture', title: 'Bouclé', alt: 'Texture de cheveux bouclés : cinq mèches en boucles régulières', texture: 'bouclé', seed: 33 },
   { id: 't4', type: 'texture', title: 'Frisé', alt: 'Texture de cheveux frisés : cinq mèches en petites spirales', texture: 'frisé', seed: 34 },
-  { id: 's1', type: 'mèche', title: 'Emplacement photo : devanture', alt: 'Emplacement réservé à une photo réelle de la devanture, avec l’accord du salon', seed: 41, photoSlot: true },
-  { id: 's2', type: 'mèche', title: 'Emplacement photo : intérieur', alt: 'Emplacement réservé à une photo réelle de l’intérieur (miroirs dorés, fauteuil de barbier), avec l’accord du salon', seed: 42, photoSlot: true },
-  { id: 's3', type: 'mèche', title: 'Emplacement photo : bols de henné', alt: 'Emplacement réservé à une photo réelle de bols de pâte de henné, avec l’accord du salon', seed: 43, photoSlot: true },
-  { id: 's4', type: 'mèche', title: 'Emplacement photo : étagère de bocaux', alt: 'Emplacement réservé à une photo réelle du mur de bocaux de poudres, avec l’accord du salon', seed: 44, photoSlot: true },
+  { id: 's1', type: 'mèche', title: 'Un salon lumineux (en attendant la devanture)', alt: 'Photo d’illustration : salon de coiffure lumineux, en attendant une photo réelle de la devanture', seed: 41, photoSlot: true, photo: 'salon-fauteuils-miroirs' },
+  { id: 's2', type: 'mèche', title: 'Miroirs et fauteuils (en attendant l’intérieur)', alt: 'Photo d’illustration : fauteuils et miroirs ronds, en attendant une photo réelle de l’intérieur', seed: 42, photoSlot: true, photo: 'salon-brique' },
+  { id: 's3', type: 'mèche', title: 'Un bol de poudre (en attendant les bols de henné)', alt: 'Photo d’illustration : bol de poudre verte, en attendant une photo réelle des bols de henné', seed: 43, photoSlot: true, photo: 'bol-poudre-verte' },
+  { id: 's4', type: 'mèche', title: 'Bocaux de plantes (en attendant l’étagère)', alt: 'Photo d’illustration : bocaux d’herbes séchées, en attendant une photo réelle du mur de bocaux', seed: 44, photoSlot: true, photo: 'bocaux-herbes' },
 ]
 export const galleryTypeLabels: Record<GalleryType, string> = { mèche: 'Mèches', herbier: 'Herbier', pigment: 'Pigments', texture: 'Textures' }

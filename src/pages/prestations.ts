@@ -1,7 +1,11 @@
 import { boot } from '../core/boot'
 import { services, categories, euro, priceFootnotes, priceHeadline, priceListDate } from '../data/services'
 import { salon } from '../data/salon'
-import { pageHero, ctaBand } from '../core/ui'
+import { pageHero, ctaBand, photoImg } from '../core/ui'
+import { photo } from '../data/photos'
+
+// Photo d'illustration par famille de prestations.
+const catPhotos: Record<string, string> = { coupes: 'coupe-ciseaux', coloration: 'bol-poudre-verte', soins: 'bol-fleurs-sechees', techniques: 'bigoudi', enfants: 'outils-brosses' }
 import { setHTML, u } from '../core/dom'
 import { icon } from '../core/icons'
 
@@ -13,13 +17,14 @@ const rules = [
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Prestations et tarifs', lead: 'Tous les prix sont lisibles ici, en texte. Ils sont « à partir de », pour cheveux courts.', dye: 'rhubarbe' })}
+  ${pageHero({ title: 'Prestations et tarifs', lead: 'Tous les prix sont lisibles ici, en texte. Ils sont « à partir de », pour cheveux courts.', dye: 'rhubarbe', photo: 'brushing' })}
   <section class="section tight">
     <div class="wrap">
       <p class="headline-italic" data-reveal>${priceHeadline}</p>
       <p class="mono muted" style="font-size:.9rem">${priceListDate}</p>
       <div class="tarif-grid" style="margin-top:2rem">
         ${categories.map((c) => `<article class="fiche-tarif" id="${c.id}" data-reveal>
+          <div class="ft-ph">${photoImg(photo(catPhotos[c.id] ?? 'brushing'))}<span class="ph-tag">Photo d’illustration</span></div>
           <h3>${c.title}</h3><p class="blurb">${c.blurb}</p>
           <ul>${services.filter((s) => s.category === c.id).map((s) => `<li class="row"><span class="nm">${s.name}</span><span class="pr">${euro(s.priceFrom)}<small>à partir de</small></span><span class="ds">${s.description}</span><span class="inc">${s.includes.map((i) => `<span class="tag">${i}</span>`).join('')}</span></li>`).join('')}</ul>
         </article>`).join('')}

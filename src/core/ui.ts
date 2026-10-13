@@ -7,8 +7,8 @@ import type { Post } from '../data/posts'
 import { photos, type Photo } from '../data/photos'
 
 // Photo d'illustration (Unsplash) : img paresseuse, recadrée par object-fit.
-export function photoImg(p: Photo, cls = ''): string {
-  return `<img class="ph${cls ? ' ' + cls : ''}" src="${p.src}" alt="${p.alt}" width="${p.w}" height="${p.h}" loading="lazy" decoding="async">`
+export function photoImg(p: Photo, cls = '', eager = false): string {
+  return `<img class="ph${cls ? ' ' + cls : ''}" src="${p.src}" alt="${p.alt}" width="${p.w}" height="${p.h}" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${eager ? ' fetchpriority="high"' : ''}>`
 }
 
 export function photoFig(p: Photo, cls = ''): string {
@@ -16,19 +16,46 @@ export function photoFig(p: Photo, cls = ''): string {
 }
 
 export function photoStrip(list: Photo[], title = ''): string {
-  return `<div class="ph-strip" role="list"${title ? ` aria-label="${title}"` : ''}>${list.map((p) => `<figure class="ph-fig" role="listitem" data-reveal>${photoImg(p)}<figcaption>Photo d’illustration</figcaption></figure>`).join('')}</div>`
+  return `<div class="ph-strip" role="list"${title ? ` aria-label="${title}"` : ''}>${list.map((p) => `<figure class="ph-fig" role="listitem" data-reveal>${photoImg(p)}<figcaption>Photo d’illustration</figcaption></figure>`).join('')}</div><p class="swipe-hint" aria-hidden="true">Faites glisser pour voir la suite</p>`
 }
 
-const postPhotos = ['bol-poudre-verte', 'boucles-brunes', 'savon-carre', 'herbes-sechees-mur', 'salon-fauteuils-miroirs', 'deux-bols-poudres', 'tresse', 'bocaux-herbes', 'cuillere-poudre', 'sechage-boucles', 'flacon-ambre', 'plantes-suspendues']
+// Photo de couverture de chaque article du journal (une par article, choisie selon le sujet).
+const postCovers: Record<string, string> = {
+  'passer-au-vegetal': 'bol-poudre-verte',
+  'henne-indigo-rhubarbe': 'deux-bols-poudres',
+  'cheveux-blancs-coloration-minerale': 'cuillere-poudre',
+  'couper-les-boucles-a-sec': 'boucles-brunes',
+  'don-de-cheveux-10-cm': 'tresse',
+  'capillum-seconde-vie': 'sechage-boucles',
+  'ruche-et-miel': 'bol-fleurs-sechees',
+  'ecocert-bien-etre-durable': 'herbes-sechees-mur',
+  'le-vrac-au-salon': 'flacon-ambre',
+  'lessive-cendre-de-cheminee': 'savon-carre',
+  'enfants-premiere-coupe': 'outils-brosses',
+  'marche-du-samedi': 'epices-marche',
+}
+const fallbackCovers = ['plantes-suspendues', 'bocaux-herbes', 'poudre-tas', 'mortier', 'feuilles-sechees', 'bol-ceramique']
+
+export function postCover(p: Post): Photo {
+  const slug = postCovers[p.slug] ?? fallbackCovers[[...p.slug].reduce((a, c) => a + c.charCodeAt(0), 0) % fallbackCovers.length]
+  return photos.find((x) => x.slug === slug) ?? photos[0]
+}
+
+/** Bande photo fine sous le titre d'une page. */
+export function photoBand(p: Photo, cls = '', eager = false): string {
+  return `<figure class="ph-fig ph-bandeau${cls ? ' ' + cls : ''}">${photoImg(p, '', eager)}<figcaption>Photo d’illustration</figcaption></figure>`
+}
 
 
-export function pageHero(opts: { title: string; lead: string; crumb?: string; dye?: string; art?: string }): string {
+export function pageHero(opts: { title: string; lead: string; crumb?: string; dye?: string; art?: string; photo?: string }): string {
+  const ph = opts.photo ? photos.find((x) => x.slug === opts.photo) : undefined
   return `<section class="page-hero" data-dye="${opts.dye ?? 'teal'}">
     <div class="wrap">
       <p class="crumb"><a href="${u()}">Accueil</a> / ${opts.crumb ?? opts.title}</p>
       <h1 data-split>${opts.title}</h1>
       <p class="lead" data-reveal>${opts.lead}</p>
       ${opts.art ?? ''}
+      ${ph ? photoBand(ph, 'hero-band', true) : ''}
     </div>
   </section>`
 }
@@ -50,8 +77,7 @@ export function ctaBand(opts: { title?: string; text?: string } = {}): string {
 
 export function postCard(p: Post, i = 0): string {
   const cols = [['#009CBB', '#00448E', '#CE2A57'], ['#A8432A', '#C99A3B', '#1E2A55'], ['#504090', '#009CBB', '#2F6E1A'], ['#CE2A57', '#504090', '#C99A3B']][i % 4]
-  const h = [...p.slug].reduce((a, c) => a + c.charCodeAt(0), 0)
-  const ph = photos.find((x) => x.slug === postPhotos[h % postPhotos.length])
+  const ph = postCover(p)
   return `<article class="post-card" data-reveal>
     <div class="thumb">${ph ? photoImg(ph) + '<span class="ph-tag">Photo d’illustration</span>' : pigmentSvg({ colors: cols, seed: p.slug.length + i * 3, id: 'pc-' + p.slug, label: '', mist: i % 2 === 0 })}</div>
     <div class="body">

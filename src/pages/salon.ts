@@ -5,7 +5,10 @@ import { ownerQuotes } from '../data/ownerQuotes'
 import { team, lineage } from '../data/team'
 import { pageHero, ctaBand } from '../core/ui'
 import { setHTML, u } from '../core/dom'
-import { photoFig } from '../core/ui'
+import { photoFig, photoImg } from '../core/ui'
+
+// Une photo de geste par rôle (aucun portrait : l'équipe reste anonyme).
+const teamPhotos = ['coupe-ciseaux', 'brushing', 'outils-brosses', 'bigoudi', 'mortier']
 import { photo } from '../data/photos'
 import { icon } from '../core/icons'
 import { pigmentSvg } from '../core/art'
@@ -20,7 +23,7 @@ const press = [
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Le salon', lead: 'Un salon de village, ouvert en 2011 par Yohann Hubert : de la haute coiffure dans une ambiance chaleureuse, décontractée et apaisante.', dye: 'teal' })}
+  ${pageHero({ title: 'Le salon', lead: 'Un salon de village, ouvert en 2011 par Yohann Hubert : de la haute coiffure dans une ambiance chaleureuse, décontractée et apaisante.', dye: 'teal', photo: 'salon-comptoir' })}
 
   <section class="section tint-mint" data-dye="henne">
     <div class="wrap two-col wide-left">
@@ -29,7 +32,7 @@ void boot((main) => {
         <ol class="timeline">${timeline.map((t) => `<li data-reveal><span class="yr">${t.year}</span><h3>${t.title}</h3><p>${t.text}</p>${t.selfReported ? '<span class="self">selon le salon</span>' : ''}</li>`).join('')}</ol>
       </div>
       <aside class="stack" style="position:sticky;top:calc(var(--header-h) + 1.5rem)">
-        <div class="photo-slot"><!-- TODO: photo réelle de la devanture, avec l'accord du salon -->Emplacement photo : devanture du salon<br>à fournir avec l’accord du salon</div>
+        <!-- TODO: photo réelle de la devanture, avec l'accord du salon -->${photoFig(photo('salon-brique'), 'salon-aside-ph')}
         <p class="muted mono" style="font-size:.88rem">${salon.address.street}, ${salon.address.postalCode} ${salon.address.city}. Dans le Bourg, à environ 50 m de l’église Saint-Martin.</p>
       </aside>
     </div>
@@ -55,7 +58,7 @@ void boot((main) => {
     <div class="wrap">
       <h2 data-split>L’équipe</h2>
       <p class="lead">Une petite équipe de trois à cinq personnes, qui se forme en continu. Seuls les rôles sont indiqués ici : la composition de l’équipe 2026 reste à confirmer avec le salon.</p>
-      <div class="team-grid" style="margin-top:2rem">${team.map((t) => `<article class="team-card" data-reveal style="background:rgb(255 255 255 / .1);border-color:rgb(255 255 255 / .3)"><h3>${t.name ?? t.role}</h3>${t.name ? `<p><strong>${t.role}</strong></p>` : ''}<p style="color:#E4F0DE">${t.text}</p></article>`).join('')}</div>
+      <div class="team-grid" style="margin-top:2rem">${team.map((t, i) => `<article class="team-card" data-reveal style="background:rgb(255 255 255 / .1);border-color:rgb(255 255 255 / .3)"><div class="team-ph">${photoImg(photo(teamPhotos[i % teamPhotos.length]))}<span class="ph-tag">Photo d’illustration</span></div><h3>${t.name ?? t.role}</h3>${t.name ? `<p><strong>${t.role}</strong></p>` : ''}<p style="color:#E4F0DE">${t.text}</p></article>`).join('')}</div>
       <h3 style="margin-top:3rem">Formation</h3>
       <ul style="max-width:65ch">${lineage.map((l) => `<li>${l}</li>`).join('')}</ul>
     </div>
@@ -82,8 +85,8 @@ void boot((main) => {
           <p>Les murs accueillent une grande fresque aquarellée. Sur ce site, elle n’est pas reproduite : nos illustrations sont originales, en attendant des photos réelles, avec l’accord du salon.</p>
         </div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem">
-          <div class="photo-slot">Emplacement photo : miroirs dorés et fauteuil de barbier</div>
-          <div class="photo-slot">Emplacement photo : mur de bocaux de poudres</div>
+          ${photoFig(photo('salon-fauteuils-miroirs'))}
+          ${photoFig(photo('bocaux-herbes'))}
           <div class="lieu-art" style="grid-column:1/-1;border-radius:var(--r-card);overflow:hidden;aspect-ratio:16/6">${pigmentSvg({ colors: ['#009CBB', '#504090', '#CE2A57'], seed: 14, id: 'lieu', label: 'Lavis d’encre grise et bleutée', mist: true })}</div>
         </div>
       </div>

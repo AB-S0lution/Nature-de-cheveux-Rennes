@@ -6,7 +6,7 @@ import { posts, postCategories } from '../data/posts'
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Journal', lead: 'Plantes, boucles, don de cheveux, vrac et vie du salon.', dye: 'indigo' })}
+  ${pageHero({ title: 'Journal', lead: 'Plantes, boucles, don de cheveux, vrac et vie du salon.', dye: 'indigo', photo: 'herbes-sechees-mur' })}
   <section class="section">
     <div class="wrap">
       ${sampleBadge('Articles d’exemple, rédigés pour la démonstration : ils ne sont pas signés par le salon.')}

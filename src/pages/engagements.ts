@@ -1,5 +1,6 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand } from '../core/ui'
+import { pageHero, ctaBand, photoFig } from '../core/ui'
+import { photo } from '../data/photos'
 import { setHTML, $, u } from '../core/dom'
 import { icon } from '../core/icons'
 import { engagements, brochureFigures, type Engagement } from '../data/engagements'
@@ -11,7 +12,7 @@ const block = (e: Engagement) => `<article class="stack" data-reveal><h3>${e.tit
 
 void boot((main) => {
   setHTML(main, `
-  ${pageHero({ title: 'Engagements', lead: 'Un salon qui cherche à concilier beauté des cheveux, respect de l’homme et de l’environnement. Chaque affirmation indique sa source.', dye: 'feuille' })}
+  ${pageHero({ title: 'Engagements', lead: 'Un salon qui cherche à concilier beauté des cheveux, respect de l’homme et de l’environnement. Chaque affirmation indique sa source.', dye: 'feuille', photo: 'plantes-suspendues' })}
 
   <section class="section">
     <div class="wrap">
@@ -31,12 +32,14 @@ void boot((main) => {
       <h2 data-split>Don de cheveux</h2>
       <p class="lead" style="color:#C9D6EA">Dès 10 cm, vos cheveux peuvent devenir une perruque. Déplacez la règle pour voir ce qui part, et ce qui reste.</p>
       <div id="ruler-host" style="margin-top:1.5rem"></div>
+      <div class="ph-trio" style="margin-top:2.5rem">${['tresse', 'sechage-boucles', 'boucles-brunes'].map((s) => photoFig(photo(s))).join('')}</div>
       <div class="grid-3" style="margin-top:2.5rem">${by('don').map((e) => `<article class="stack"><h3>${e.title}</h3><p style="color:#DCE5F3">${e.text}</p></article>`).join('')}</div>
     </div>
   </section>
 
   <section class="section" data-dye="curcuma">
     <div class="wrap two-col">${by('ruche').map(block).join('')}${by('dechet').map(block).join('')}</div>
+    <div class="wrap ph-trio" style="margin-top:2.5rem">${['savon-carre', 'bol-fleurs-sechees', 'feuilles-sechees'].map((s) => photoFig(photo(s))).join('')}</div>
   </section>
 
   <section class="section tint-leaf" data-dye="feuille">

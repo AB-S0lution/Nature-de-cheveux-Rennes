@@ -4,7 +4,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import Lenis from 'lenis'
-import { $, $$, isDesktop } from './dom'
+import { $, $$ } from './dom'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 export { gsap, ScrollTrigger, SplitText }
@@ -44,7 +44,71 @@ function initStrandPath(): SVGPathElement | null {
   return path
 }
 
+/** Requêtes partagées : bureau (souris, grand écran) contre tactile / petit écran. */
+export const MQ = {
+  desktop: '(min-width: 900px) and (hover: hover) and (pointer: fine)',
+  touch: '(max-width: 899px), (hover: none), (pointer: coarse)',
+}
+export const isTouchLayout = (): boolean => matchMedia(MQ.touch).matches
+export const mm = gsap.matchMedia()
+
+/* Révélations à l'épreuve des pannes : le contenu est visible par défaut. Il n'est masqué
+   qu'après l'ajout de html.reveal-ready (ci-dessous), et un IntersectionObserver le montre.
+   Filets de sécurité : nouvel élément observé automatiquement (MutationObserver), contrôle
+   au défilement, et minuterie qui montre tout ce qui est déjà passé ou à l'écran. */
+let io: IntersectionObserver | null = null
+const pending = new Set<Element>()
+
+function show(el: Element, delay = 0): void {
+  if (!pending.has(el)) return
+  pending.delete(el)
+  io?.unobserve(el)
+  ;(el as HTMLElement).style.transitionDelay = delay ? `${delay}ms` : ''
+  el.classList.add('is-in')
+}
+
+function track(el: Element): void {
+  if (pending.has(el) || el.classList.contains('is-in')) return
+  pending.add(el)
+  io?.observe(el)
+}
+
+function sweep(all = false): void {
+  const h = window.innerHeight
+  pending.forEach((el) => {
+    const r = el.getBoundingClientRect()
+    if (all || r.top < h * 1.05 || (r.width === 0 && r.height === 0)) show(el)
+  })
+}
+
+function initReveals(): void {
+  if (reduced || !('IntersectionObserver' in window)) { root.classList.remove('reveal-ready'); return }
+  io = new IntersectionObserver((entries) => {
+    let n = 0
+    entries.forEach((e) => { if (e.isIntersecting) show(e.target, Math.min(n++, 6) * 70) })
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.01 })
+  // Ce qui est déjà à l'écran reste affiché tel quel (pas de clignotement), le reste attend.
+  const h = window.innerHeight
+  $$('[data-reveal]').forEach((el) => { if (el.getBoundingClientRect().top < h) el.classList.add('is-in'); else track(el) })
+  root.classList.add('reveal-ready')
+  // Contenu rendu plus tard (filtres, cartes du journal, catalogue) : observé aussi.
+  new MutationObserver((muts) => {
+    muts.forEach((m) => m.addedNodes.forEach((n) => {
+      if (!(n instanceof Element)) return
+      if (n.matches('[data-reveal]')) track(n)
+      n.querySelectorAll('[data-reveal]').forEach(track)
+    }))
+  }).observe(document.getElementById('main') ?? document.body, { childList: true, subtree: true })
+  let t: number | undefined
+  window.addEventListener('scroll', () => { window.clearTimeout(t); t = window.setTimeout(() => sweep(), 180) }, { passive: true })
+  window.setTimeout(() => sweep(), 2500)
+  window.addEventListener('pageshow', () => sweep())
+  // Dernier recours : rien ne doit rester invisible plus de 8 s.
+  window.setTimeout(() => sweep(true), 8000)
+}
+
 export function initMotion(): void {
+  ScrollTrigger.config({ ignoreMobileResize: true })
   const strand = initStrandPath()
   const len = strand ? strand.getTotalLength() : 0
   if (strand) {
@@ -61,42 +125,38 @@ export function initMotion(): void {
   })
   root.style.setProperty('--strand', dyeColor('teal'))
 
+  try { initReveals() } catch { root.classList.remove('reveal-ready') }
   if (reduced) return
-
-  if (heavy) {
-    lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 0.95, smoothWheel: true })
-    lenis.on('scroll', ScrollTrigger.update)
-    gsap.ticker.add((t) => lenis!.raf(t * 1000))
-    gsap.ticker.lagSmoothing(0)
-    document.addEventListener('click', (e) => {
-      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href*="#"]')
-      if (!a || !lenis) return
-      const url = new URL(a.href)
-      if (url.pathname !== location.pathname || !url.hash) return
-      const el = document.getElementById(url.hash.slice(1))
-      if (el) { e.preventDefault(); lenis.scrollTo(el, { offset: -80 }); history.replaceState(null, '', url.hash) }
-    })
-  }
 
   if (strand) {
     gsap.to(strand, { strokeDashoffset: 0, ease: 'none', scrollTrigger: { trigger: document.body, start: 'top top', end: 'bottom bottom', scrub: 0.4 } })
   }
 
-  // Révélations en lot
-  ScrollTrigger.batch('[data-reveal]', {
-    start: 'top 90%', once: true,
-    onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.08, overwrite: true, clearProps: 'transform' }),
+  // Bureau : défilement doux, titres en lignes masquées, boutons magnétiques, fiches inclinables.
+  mm.add(MQ.desktop, () => {
+    if (heavy) {
+      lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 0.95, smoothWheel: true })
+      lenis.on('scroll', ScrollTrigger.update)
+      const raf = (t: number) => lenis?.raf(t * 1000)
+      gsap.ticker.add(raf)
+      gsap.ticker.lagSmoothing(0)
+      const onClick = (e: MouseEvent) => {
+        const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href*="#"]')
+        if (!a || !lenis) return
+        const url = new URL(a.href)
+        if (url.pathname !== location.pathname || !url.hash) return
+        const el = document.getElementById(url.hash.slice(1))
+        if (el) { e.preventDefault(); lenis.scrollTo(el, { offset: -80 }); history.replaceState(null, '', url.hash) }
+      }
+      document.addEventListener('click', onClick)
+      return () => { gsap.ticker.remove(raf); document.removeEventListener('click', onClick); lenis?.destroy(); lenis = null }
+    }
   })
-
-  // Titres : lignes masquées qui montent
-  $$('[data-split]').forEach((el) => {
-    const split = SplitText.create(el, { type: 'lines', mask: 'lines', autoSplit: true,
-      onSplit: (self) => gsap.from(self.lines, { yPercent: 108, duration: 1.1, ease: 'power4.out', stagger: 0.1, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }) })
-    void split
-  })
-
-  if (isDesktop()) {
-    // Boutons magnétiques
+  mm.add(MQ.desktop, () => {
+    $$('[data-split]').forEach((el) => {
+      SplitText.create(el, { type: 'lines', mask: 'lines', autoSplit: true,
+        onSplit: (self) => gsap.from(self.lines, { yPercent: 108, duration: 1.1, ease: 'power4.out', stagger: 0.1, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }) })
+    })
     $$('[data-magnetic]').forEach((b) => {
       const xTo = gsap.quickTo(b, 'x', { duration: 0.5, ease: 'power3.out' })
       const yTo = gsap.quickTo(b, 'y', { duration: 0.5, ease: 'power3.out' })
@@ -107,7 +167,6 @@ export function initMotion(): void {
       })
       b.addEventListener('pointerleave', () => { xTo(0); yTo(0) })
     })
-    // Fiches tarifs : inclinaison de 2° maximum
     $$('.fiche-tarif').forEach((c) => {
       c.addEventListener('pointermove', (e) => {
         const r = c.getBoundingClientRect()
@@ -117,7 +176,16 @@ export function initMotion(): void {
       })
       c.addEventListener('pointerleave', () => { c.style.transform = '' })
     })
-  }
+  })
+  // Tactile / petit écran : pas de SplitText (coûteux), les titres montent d'un bloc.
+  mm.add(MQ.touch, () => {
+    const h = window.innerHeight
+    $$('[data-split]').forEach((el) => {
+      if (el.hasAttribute('data-reveal') || el.getBoundingClientRect().top < h) return
+      el.setAttribute('data-reveal', '')
+      track(el)
+    })
+  })
 }
 
 /** Titre du hero : chaque lettre « prend la couleur » en tombant d'un gris d'encre vers l'indigo. */

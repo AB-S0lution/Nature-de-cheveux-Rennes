@@ -1,5 +1,6 @@
 import { boot } from '../core/boot'
-import { pageHero, ctaBand } from '../core/ui'
+import { pageHero, ctaBand, photoFig } from '../core/ui'
+import { photo } from '../data/photos'
 import { setHTML, u } from '../core/dom'
 import { icon } from '../core/icons'
 import { strandSvg } from '../core/art'
@@ -17,7 +18,7 @@ const textures = [
 void boot((main) => {
   const kalia = products.filter((p) => p.brand === 'Kalia Nature')
   setHTML(main, `
-  ${pageHero({ title: 'Cheveux bouclés et texturés', lead: 'Ondulés, bouclés, frisés, locks : une coupe sur cheveux secs, pensée pour la forme naturelle de vos cheveux.', dye: 'indigo' })}
+  ${pageHero({ title: 'Cheveux bouclés et texturés', lead: 'Ondulés, bouclés, frisés, locks : une coupe sur cheveux secs, pensée pour la forme naturelle de vos cheveux.', dye: 'indigo', photo: 'boucles-volume' })}
 
   <section class="section">
     <div class="wrap two-col">
@@ -27,7 +28,7 @@ void boot((main) => {
         <p>Cela prend le temps qu’il faut. Dites-nous à la réservation que vos cheveux sont texturés, et nous prévoyons l’espace nécessaire.</p>
         <a class="link" href="${u('prestations/')}">Voir les tarifs${icon('arrowRight', 18)}</a>
       </div>
-      <div class="note-box"><p>« Enfin un salon qui sait couper et coiffer des cheveux bouclés et naturels ! »</p><p class="mono" style="font-size:.85rem">Avis Google, 18/02/2025</p></div>
+      <div class="stack">${photoFig(photo('boucles-brunes'), 'ph-landscape')}<div class="note-box"><p>« Enfin un salon qui sait couper et coiffer des cheveux bouclés et naturels ! »</p><p class="mono" style="font-size:.85rem">Avis Google, 18/02/2025</p></div></div>
     </div>
   </section>
 

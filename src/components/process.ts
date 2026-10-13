@@ -1,7 +1,7 @@
 // « De la poudre à la mèche » : six temps, épinglés et pilotés par le défilement (ou empilés sans mouvement).
 import { icon } from '../core/icons'
 import { typo, isDesktop } from '../core/dom'
-import { gsap, ScrollTrigger, heavy } from '../core/motion'
+import { gsap, ScrollTrigger, heavy, reduced, lite } from '../core/motion'
 import { $, $$ } from '../core/dom'
 import { bowlPlants } from '../data/plants'
 
@@ -57,45 +57,78 @@ export function mountProcess(host: HTMLElement): void {
     </div>
   </section>`)
   void icon
-
-  if (!heavy || !isDesktop()) return
   const sec = $('.process', host)!
   const stage = $('.process-stage', host)!
-  sec.classList.add('is-pinned')
   const q = (s: string) => $(s, host)!
   const bs = $$('.beat', host)
   const jars = $$('.pj', host)
   jars.forEach((j) => { gsap.set(j, { x: 0, y: 0, scale: 0.4, opacity: 0, rotation: 0, transformOrigin: '50% 50%' }) })
+  const pinned = heavy && isDesktop()
 
-  const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' }, scrollTrigger: { trigger: stage, start: 'top top', end: '+=420%', pin: true, scrub: 0.8, anticipatePin: 1,
-    onUpdate: (self) => { gsap.set($('.process-bar i', host)!, { scaleX: self.progress }) } } })
-  const T = (i: number) => i * 1
-  // Temps 1 : les poudres se déploient en éventail
-  jars.forEach((j, i) => tl.to(j, { x: (i - 2.5) * 52, y: Math.abs(i - 2.5) * 6, scale: 1, opacity: 1, rotation: (i - 2.5) * 5, duration: 0.7 }, T(0) + i * 0.05))
-  tl.to(bs[0], { opacity: 1, duration: 0.01 }, 0)
-  // Temps 2 : l'eau
-  tl.to(bs[0], { opacity: 0, y: -16, duration: 0.3 }, T(1) - 0.1).fromTo(bs[1], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(1))
-  tl.to(jars, { y: -24, opacity: 0.35, scale: 0.7, duration: 0.6 }, T(1))
-  tl.to(q('.sc-jug'), { opacity: 1, rotation: -18, duration: 0.5, transformOrigin: '50% 50%' }, T(1))
-  tl.to(q('.p-water'), { opacity: 0.85, duration: 0.6 }, T(1) + 0.2)
-  tl.fromTo(q('.p-ripple'), { attr: { rx: 8, ry: 2.5 }, opacity: 0.9 }, { attr: { rx: 66, ry: 11 }, opacity: 0, duration: 0.8 }, T(1) + 0.3)
-  // Temps 3 : le mélange
-  tl.to(bs[1], { opacity: 0, y: -16, duration: 0.3 }, T(2) - 0.1).fromTo(bs[2], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(2))
-  tl.to(q('.sc-jug'), { opacity: 0, duration: 0.3 }, T(2)).to(jars, { opacity: 0, duration: 0.3 }, T(2))
-  tl.to(q('.p-paste'), { opacity: 1, duration: 0.7 }, T(2)).to(q('.p-swirl'), { opacity: 0.9, rotation: 360, svgOrigin: '200 197', duration: 0.9 }, T(2))
-  // Temps 4 : la pose (bol à gauche, mèche à droite)
-  tl.to(bs[2], { opacity: 0, y: -16, duration: 0.3 }, T(3) - 0.1).fromTo(bs[3], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(3))
-  tl.to(q('.sc-bowl'), { x: -110, scale: 0.7, duration: 0.7 }, T(3)).to(q('.p-swirl'), { opacity: 0, duration: 0.2 }, T(3))
-  tl.to(q('.sc-apply'), { opacity: 1, duration: 0.4 }, T(3)).to(q('.a-strand-paste'), { opacity: 1, duration: 0.7 }, T(3) + 0.1)
-  tl.to(q('.a-cap'), { opacity: 0.95, duration: 0.5 }, T(3) + 0.3).to(q('.a-cup'), { opacity: 1, duration: 0.5 }, T(3) + 0.3)
-  // Temps 5 : le rinçage
-  tl.to(bs[3], { opacity: 0, y: -16, duration: 0.3 }, T(4) - 0.1).fromTo(bs[4], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(4))
-  tl.to(q('.a-cap'), { opacity: 0, duration: 0.3 }, T(4)).to(q('.a-cup'), { opacity: 0, duration: 0.3 }, T(4))
-  tl.fromTo(q('.sc-rinse'), { opacity: 1, y: 40 }, { y: -320, duration: 0.9, ease: 'power1.inOut' }, T(4)).to(q('.a-strand-paste'), { opacity: 0, duration: 0.5 }, T(4) + 0.35)
-  tl.to(q('.sc-rinse'), { opacity: 0, duration: 0.2 }, T(4) + 0.85)
-  // Temps 6 : la mèche révélée
-  tl.to(bs[4], { opacity: 0, y: -16, duration: 0.3 }, T(5) - 0.1).fromTo(bs[5], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(5))
-  tl.to(q('.a-strand-final'), { opacity: 1, duration: 0.7 }, T(5)).to(q('.sc-bowl'), { opacity: 0.35, duration: 0.5 }, T(5)).to(q('.sc-spark'), { opacity: 1, duration: 0.5 }, T(5) + 0.3)
-  tl.to({}, { duration: 0.5 }, T(5) + 0.7)
-  ScrollTrigger.refresh()
+  // La scène (bol, eau, pose, rinçage). Les fondus de texte ne servent qu'à la version épinglée.
+  const build = (tl: gsap.core.Timeline, withBeats: boolean, onBeat?: (i: number) => void) => {
+    const T = (i: number) => i * 1
+    const beat = (i: number) => {
+      if (withBeats) {
+        if (i === 0) tl.to(bs[0], { opacity: 1, duration: 0.01 }, 0)
+        else tl.to(bs[i - 1], { opacity: 0, y: -16, duration: 0.3 }, T(i) - 0.1).fromTo(bs[i], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3 }, T(i))
+      }
+      if (onBeat) tl.call(onBeat, [i], T(i))
+    }
+    // Temps 1 : les poudres se déploient en éventail
+    beat(0)
+    jars.forEach((j, i) => tl.to(j, { x: (i - 2.5) * 52, y: Math.abs(i - 2.5) * 6, scale: 1, opacity: 1, rotation: (i - 2.5) * 5, duration: 0.7 }, T(0) + i * 0.05))
+    // Temps 2 : l'eau
+    beat(1)
+    tl.to(jars, { y: -24, opacity: 0.35, scale: 0.7, duration: 0.6 }, T(1))
+    tl.to(q('.sc-jug'), { opacity: 1, rotation: -18, duration: 0.5, transformOrigin: '50% 50%' }, T(1))
+    tl.to(q('.p-water'), { opacity: 0.85, duration: 0.6 }, T(1) + 0.2)
+    tl.fromTo(q('.p-ripple'), { attr: { rx: 8, ry: 2.5 }, opacity: 0.9 }, { attr: { rx: 66, ry: 11 }, opacity: 0, duration: 0.8 }, T(1) + 0.3)
+    // Temps 3 : le mélange
+    beat(2)
+    tl.to(q('.sc-jug'), { opacity: 0, duration: 0.3 }, T(2)).to(jars, { opacity: 0, duration: 0.3 }, T(2))
+    tl.to(q('.p-paste'), { opacity: 1, duration: 0.7 }, T(2)).to(q('.p-swirl'), { opacity: 0.9, rotation: 360, svgOrigin: '200 197', duration: 0.9 }, T(2))
+    // Temps 4 : la pose (bol à gauche, mèche à droite)
+    beat(3)
+    tl.to(q('.sc-bowl'), { x: -110, scale: 0.7, duration: 0.7 }, T(3)).to(q('.p-swirl'), { opacity: 0, duration: 0.2 }, T(3))
+    tl.to(q('.sc-apply'), { opacity: 1, duration: 0.4 }, T(3)).to(q('.a-strand-paste'), { opacity: 1, duration: 0.7 }, T(3) + 0.1)
+    tl.to(q('.a-cap'), { opacity: 0.95, duration: 0.5 }, T(3) + 0.3).to(q('.a-cup'), { opacity: 1, duration: 0.5 }, T(3) + 0.3)
+    // Temps 5 : le rinçage
+    beat(4)
+    tl.to(q('.a-cap'), { opacity: 0, duration: 0.3 }, T(4)).to(q('.a-cup'), { opacity: 0, duration: 0.3 }, T(4))
+    tl.fromTo(q('.sc-rinse'), { opacity: 1, y: 40 }, { y: -320, duration: 0.9, ease: 'power1.inOut' }, T(4)).to(q('.a-strand-paste'), { opacity: 0, duration: 0.5 }, T(4) + 0.35)
+    tl.to(q('.sc-rinse'), { opacity: 0, duration: 0.2 }, T(4) + 0.85)
+    // Temps 6 : la mèche révélée
+    beat(5)
+    tl.to(q('.a-strand-final'), { opacity: 1, duration: 0.7 }, T(5)).to(q('.sc-bowl'), { opacity: 0.35, duration: 0.5 }, T(5)).to(q('.sc-spark'), { opacity: 1, duration: 0.5 }, T(5) + 0.3)
+    tl.to({}, { duration: 0.5 }, T(5) + 0.7)
+    return tl
+  }
+
+  if (pinned) {
+    // Bureau : scène épinglée, pilotée par le défilement.
+    sec.classList.add('is-pinned')
+    build(gsap.timeline({ defaults: { ease: 'power2.inOut' }, scrollTrigger: { trigger: stage, start: 'top top', end: '+=420%', pin: true, scrub: 0.8, anticipatePin: 1,
+      onUpdate: (self) => { gsap.set($('.process-bar i', host)!, { scaleX: self.progress }) } } }), true)
+    ScrollTrigger.refresh()
+    return
+  }
+
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } })
+  if (reduced || lite) {
+    // Mouvement réduit ou appareil modeste : une image fixe, poudres en éventail.
+    build(tl, false)
+    tl.seek(0.98)
+    return
+  }
+  // Tactile / tablette : pas d'épinglage. Les six temps restent empilés et lisibles ; la scène
+  // joue en boucle tant qu'elle est à l'écran, et le temps en cours s'allume dans la liste.
+  sec.classList.add('is-looping')
+  const bar = $('.process-bar i', host)!
+  const setBeat = (i: number) => bs.forEach((b, k) => b.classList.toggle('on', k === i))
+  build(tl, false, setBeat)
+  tl.eventCallback('onUpdate', () => gsap.set(bar, { scaleX: tl.progress() }))
+  tl.repeat(-1).repeatDelay(1.2).timeScale(0.75)
+  setBeat(0)
+  ScrollTrigger.create({ trigger: sec, start: 'top bottom', end: 'bottom top', onToggle: (self) => { if (self.isActive) tl.play(); else tl.pause() } })
 }
