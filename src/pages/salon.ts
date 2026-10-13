@@ -81,10 +81,10 @@ void boot((main) => {
           <p class="lead">Des miroirs dorés, un fauteuil de barbier d’époque, du mobilier de seconde main, un mur de bocaux de poudres sur des étagères en métal noir, beaucoup de plantes vertes.</p>
           <p>Les murs accueillent une grande fresque aquarellée. Sur ce site, elle n’est pas reproduite : nos illustrations sont originales, en attendant des photos réelles, avec l’accord du salon.</p>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem">
           <div class="photo-slot">Emplacement photo : miroirs dorés et fauteuil de barbier</div>
           <div class="photo-slot">Emplacement photo : mur de bocaux de poudres</div>
-          <div style="grid-column:1/-1;border-radius:var(--r-card);overflow:hidden;aspect-ratio:16/6">${pigmentSvg({ colors: ['#009CBB', '#504090', '#CE2A57'], seed: 14, id: 'lieu', label: 'Lavis d’encre grise et bleutée', mist: true })}</div>
+          <div class="lieu-art" style="grid-column:1/-1;border-radius:var(--r-card);overflow:hidden;aspect-ratio:16/6">${pigmentSvg({ colors: ['#009CBB', '#504090', '#CE2A57'], seed: 14, id: 'lieu', label: 'Lavis d’encre grise et bleutée', mist: true })}</div>
         </div>
       </div>
     </div>

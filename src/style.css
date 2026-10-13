@@ -594,6 +594,19 @@ dialog.lightbox svg { max-height: 68dvh; width: auto; margin-inline: auto; }
 /* ============ 404 / divers ============ */
 .hide { display: none !important; }
 .sticky-cta { position: fixed; z-index: 35; right: 14px; bottom: 26px; }
+/* Téléphone : bouton d'appel compact + espace réservé sous le pied de page pour qu'il ne masque rien */
+.two-col > * { min-width: 0; }
+.lieu-art svg { display: block; width: 100%; height: 100%; }
+.wordmark { display: inline-block; padding-block: 11px; }
+.btn.small { min-height: 44px; }
+@media (max-width: 1099px) {
+  .footer { padding-bottom: calc(2rem + 84px + env(safe-area-inset-bottom)); }
+  .sticky-cta { bottom: calc(16px + env(safe-area-inset-bottom)); }
+}
+@media (max-width: 599px) {
+  .sticky-cta { width: 56px; height: 56px; padding: 0; border-radius: 999px; justify-content: center; box-shadow: 0 8px 24px rgb(18 32 58 / .25); }
+  .sticky-cta span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
 @media (min-width: 1100px) { .sticky-cta { display: none; } }
 .wave-div { color: var(--teal); height: 60px; margin-top: -1px; }
 
