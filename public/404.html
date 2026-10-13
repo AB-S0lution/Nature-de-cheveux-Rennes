@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Mèche perdue | Nature de cheveux</title>
+    <link rel="icon" type="image/svg+xml" href="/Nature-de-cheveux-Rennes/favicon.svg" />
+    <style>
+      :root { --paper: #F1F4F1; --ink: #12203A; --framboise: #CE2A57; --teal: #009CBB; }
+      @media (prefers-color-scheme: dark) { :root { --paper: #0D1730; --ink: #EEF3F1; --framboise: #E2557A; --teal: #3CC2DC; } }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, sans-serif; color: var(--ink); background: var(--paper); text-align: center; padding: 1rem; box-sizing: border-box; }
+      h1 { font-family: "Bodoni Moda", Georgia, serif; font-style: italic; font-weight: 500; font-size: clamp(2.4rem, 8vw, 4.5rem); margin: .5rem 0; }
+      a.btn { display: inline-block; padding: .85rem 1.6rem; border-radius: 999px; background: var(--framboise); color: #fff; text-decoration: none; font-weight: 600; margin-top: 1rem; }
+      a.btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+      svg { width: min(60vw, 220px); height: auto; }
+      path { stroke-dasharray: 520; stroke-dashoffset: 520; animation: draw 2.4s ease-out forwards; }
+      @keyframes draw { to { stroke-dashoffset: 0; } }
+      @media (prefers-reduced-motion: reduce) { path { animation: none; stroke-dashoffset: 0; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg viewBox="0 0 200 200" role="img" aria-label="Une mèche qui se perd, puis revient vers le point de départ"><path d="M30 170 C 30 90, 120 120, 100 60 C 85 15, 30 40, 55 80 C 75 110, 150 90, 160 40" fill="none" stroke="#CE2A57" stroke-width="6" stroke-linecap="round"/><circle cx="160" cy="40" r="7" fill="#009CBB"/></svg>
+      <h1>Mèche perdue</h1>
+      <p>La page demandée n’existe pas ou a été déplacée. Suivez la mèche : elle ramène à l’accueil.</p>
+      <a class="btn" href="/Nature-de-cheveux-Rennes/">Retour à l’accueil</a>
+    </main>
+  </body>
+</html>
