@@ -116,14 +116,16 @@ export function initMotion(): void {
     strand.style.strokeDashoffset = reduced ? '0' : String(len)
   }
 
-  // Couleur de teinture du fil : une plante par section.
+  // Couleur de teinture du fil : une plante par section. La variable est posée sur le fil
+  // lui-même, pas sur <html> : sinon chaque changement recalcule le style de toute la page.
+  const strandHost = $<HTMLElement>('.strand-progress') ?? root
   $$('[data-dye]').forEach((sec) => {
     ScrollTrigger.create({
       trigger: sec, start: 'top 55%', end: 'bottom 55%',
-      onToggle: (self) => { if (self.isActive) root.style.setProperty('--strand', dyeColor(sec.dataset.dye ?? 'teal')) },
+      onToggle: (self) => { if (self.isActive) strandHost.style.setProperty('--strand', dyeColor(sec.dataset.dye ?? 'teal')) },
     })
   })
-  root.style.setProperty('--strand', dyeColor('teal'))
+  strandHost.style.setProperty('--strand', dyeColor('teal'))
 
   try { initReveals() } catch { root.classList.remove('reveal-ready') }
   if (reduced) return

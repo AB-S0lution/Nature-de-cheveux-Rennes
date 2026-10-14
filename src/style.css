@@ -539,7 +539,7 @@ dialog.lightbox svg { max-height: 68dvh; width: auto; margin-inline: auto; }
 .two-col { display: grid; gap: 2rem; }
 @media (min-width: 900px) { .two-col { grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; } .two-col.wide-left { grid-template-columns: 1.2fr .8fr; } }
 .grid-3 { display: grid; gap: 1.2rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-.herb-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.herb-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(136px, 100%), 1fr)); }
 .herb-grid figure { margin: 0; display: grid; gap: .5rem; }
 .herb-grid figcaption { font-size: .88rem; color: var(--ink-soft); }
 .herb-grid svg { width: 100%; height: auto; filter: drop-shadow(0 12px 18px rgb(18 32 58 / .18)); }
@@ -709,7 +709,14 @@ input, select, textarea { font-size: max(16px, 1rem); }
   .bento .c5 { grid-column: 1 / -1; }
   .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (min-width: 760px) and (max-width: 899px) { .two-col.wide-left { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 2rem; } }
+@media (min-width: 760px) and (max-width: 899px) { .two-col.wide-left { grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 2rem; align-items: start; } }
+/* Grilles à nombre impair d'éléments : le dernier prend toute la largeur au lieu de laisser un trou */
+.ph-mosaic > .ph-fig:last-child:nth-child(odd) { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+@media (min-width: 900px) { .ph-mosaic > .ph-fig:last-child:nth-child(odd) { grid-column: auto; aspect-ratio: 4 / 5; } }
+@media (min-width: 600px) and (max-width: 899px) {
+  .book-grid > :last-child:nth-child(odd), .team-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .two-col .ph-landscape { aspect-ratio: 2 / 1; }
+}
 /* Téléphone en paysage / tablette paysage basse : héros moins haut */
 @media (orientation: landscape) and (max-height: 520px) {
   .hero { min-height: auto; padding-bottom: 2rem; }
@@ -736,3 +743,14 @@ input, select, textarea { font-size: max(16px, 1rem); }
 .process.is-looping .process-bar { order: -1; }
 .marquee.is-off .marquee-track { animation-play-state: paused; }
 html.reduce .swipe-hint::after { animation: none; }
+/* Cheveux bouclés : les mèches gardent leur hauteur de 230 px et ne recouvrent pas les légendes */
+.tx-cell { height: 230px; display: grid; place-items: center; }
+.tx-cell svg { height: 100%; width: auto; }
+/* Galerie sur téléphone : deux colonnes de photos au lieu d'une longue file pleine largeur */
+@media (max-width: 559px) {
+  .ph-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+  .ph-grid .ph-fig figcaption { left: .4rem; bottom: .4rem; font-size: .62rem; padding: 2px 6px; max-width: calc(100% - .8rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 559px) { .tx-cell { height: 190px; } }
+/* Boutons des cartes de réservation : le libellé passe à la ligne sur 320 px au lieu d'être rogné */
+.book-card .btn { white-space: normal; text-align: center; }

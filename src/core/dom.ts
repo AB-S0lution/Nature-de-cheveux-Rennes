@@ -9,7 +9,7 @@ export function typo(s: string): string {
     .map((part) => (part.startsWith('<') ? part : part
       .replace(/ ([?!;:»€%])/g, `${NBSP}$1`)
       .replace(/« /g, `«${NBSP}`)
-      .replace(/(\d) (h|km|cm|m|ans|€|%)\b/g, `$1${NBSP}$2`)
+      .replace(/(\d) (h|km|cm|min|m|ans|€|%)\b/g, `$1${NBSP}$2`)
       .replace(/(\d) (\d{2}) (\d{2}) (\d{2}) (\d{2})/g, `$1${NBSP}$2${NBSP}$3${NBSP}$4${NBSP}$5`)))
     .join('')
 }

@@ -35,7 +35,7 @@ void boot((main) => {
   <section class="section tint-mint" data-dye="curcuma">
     <div class="wrap">
       <h2 data-split>Quatre textures, un même soin</h2>
-      <div class="grid-3" style="margin-top:2rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">${textures.map((t) => `<figure style="margin:0;text-align:center" data-reveal><div style="height:230px;display:grid;place-items:center">${strandSvg({ texture: t.t, from: t.c, to: t.c, w: 120, h: 220, seed: 5, width: 6, id: 'tx-' + t.t, label: `Mèche ${t.label.toLowerCase()}` })}</div><figcaption><strong>${t.label}</strong><br><span class="muted">${t.text}</span></figcaption></figure>`).join('')}</div>
+      <div class="grid-3" style="margin-top:2rem;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr))">${textures.map((t) => `<figure style="margin:0;text-align:center" data-reveal><div class="tx-cell">${strandSvg({ texture: t.t, from: t.c, to: t.c, w: 120, h: 220, seed: 5, width: 6, id: 'tx-' + t.t, label: `Mèche ${t.label.toLowerCase()}` })}</div><figcaption><strong>${t.label}</strong><br><span class="muted">${t.text}</span></figcaption></figure>`).join('')}</div>
       <p class="muted" style="margin-top:1.5rem">Les locks sont aussi accueillies au salon : parlez-en à la réservation.</p>
     </div>
   </section>

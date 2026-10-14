@@ -231,8 +231,10 @@ void boot(async (main) => {
       ScrollTrigger.create({ trigger: art, start: 'top bottom', end: 'bottom top', onToggle: (self) => loops.forEach((l) => (self.isActive ? l.resume() : l.pause())) })
     })
     mm.add(MQ.touch, () => {
-      // Tactile : une seule respiration (le filtre de turbulence est trop coûteux à animer en continu).
-      gsap.fromTo(blobs, { scale: 0.86 }, { scale: 1.06, duration: 2.4, ease: 'sine.out', stagger: 0.15 })
+      // Tactile : une seule respiration de tout le dessin, en couche composée. Animer les taches
+      // sous le filtre de turbulence recalcule le filtre à chaque image (tâches longues sur téléphone).
+      const pig = art.querySelector<SVGElement>('.art-pigment')
+      if (pig) gsap.fromTo(pig, { scale: 0.92, opacity: 0.6, willChange: 'transform' }, { scale: 1, opacity: 0.95, duration: 2.4, ease: 'sine.out', onComplete: () => gsap.set(pig, { clearProps: 'willChange' }) })
     })
     const qx = gsap.quickTo(art.querySelector('.art-pigment'), 'x', { duration: 1.2, ease: 'power3.out' })
     const qy = gsap.quickTo(art.querySelector('.art-pigment'), 'y', { duration: 1.2, ease: 'power3.out' })
